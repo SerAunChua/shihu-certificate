@@ -424,21 +424,13 @@
       </div>
 
       <div class="download-panel">
-        <div class="download-title">取得證書</div>
-
-        <div class="controls">
-          <input type="email" id="emailInput" placeholder="可選填 Email">
-        </div>
+        <div class="download-title">下載證書</div>
 
         <div class="download-buttons">
           <button id="downloadBtn" type="button">直接下載證書 PNG</button>
-          <button id="emailBtn" type="button">透過郵件取得</button>
         </div>
 
-        <div class="small-note">
-          直接下載會把目前證書存成 PNG 圖片。<br>
-          郵件功能會開啟使用者的 Email App，附上網頁連結；純 GitHub Pages 無法自動夾帶附件。
-        </div>
+        <div class="small-note">按下「直接下載證書 PNG」後，系統會把目前顯示的證書下載成圖片檔。</div>
       </div>
 
       <div class="print-tip">如需列印，可直接使用瀏覽器列印功能。</div>
@@ -455,8 +447,6 @@
       var certDate = document.getElementById("certDate");
       var message = document.getElementById("message");
       var downloadBtn = document.getElementById("downloadBtn");
-      var emailBtn = document.getElementById("emailBtn");
-      var emailInput = document.getElementById("emailInput");
 
       function formatDate() {
         var today = new Date();
@@ -491,7 +481,6 @@
 
       function resetAll() {
         nicknameInput.value = "";
-        emailInput.value = "";
         certificateArea.style.display = "none";
         certName.textContent = "參與者暱稱";
         certDate.textContent = formatDate();
@@ -522,16 +511,6 @@
         });
       }
 
-      function emailCertificate() {
-        var nickname = nicknameInput.value.replace(/^\s+|\s+$/g, "");
-        var email = emailInput.value.replace(/^\s+|\s+$/g, "");
-
-        if (nickname === "") {
-          message.textContent = "請先輸入暱稱。";
-          message.style.color = "#d32f2f";
-          return;
-        }
-
         var subject = encodeURIComponent("小小石滬匠師合格證書");
         var body = encodeURIComponent(
           nickname + " 您好：\n\n" +
@@ -555,7 +534,6 @@
 
       resetBtn.addEventListener("click", resetAll);
       downloadBtn.addEventListener("click", downloadCertificate);
-      emailBtn.addEventListener("click", emailCertificate);
 
       certDate.textContent = formatDate();
     })();
