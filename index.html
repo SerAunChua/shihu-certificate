@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>小小石滬匠師證書</title>
 
-  <!-- 用來把證書區塊轉成圖片下載 -->
+  <!-- 下載證書圖片用 -->
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
   <style>
@@ -85,6 +85,16 @@
 
     #resetBtn:hover {
       background: #e7e7e7;
+    }
+
+    #downloadBtn {
+      background: #2e7d32;
+      color: white;
+    }
+
+    #downloadBtn:hover {
+      background: #246428;
+      transform: translateY(-1px);
     }
 
     #message {
@@ -223,6 +233,22 @@
       line-height: 1;
     }
 
+    .seal {
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #f7e7a8, #d6a530 65%, #b27d12);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #6d4600;
+      font-weight: bold;
+      font-size: 17px;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.16);
+      margin: 10px auto 0 auto;
+      line-height: 1.5;
+    }
+
     .bottom-row {
       margin-top: 28px;
       display: flex;
@@ -244,22 +270,6 @@
       padding-top: 8px;
     }
 
-    .seal {
-      width: 110px;
-      height: 110px;
-      border-radius: 50%;
-      background: radial-gradient(circle at 35% 35%, #f7e7a8, #d6a530 65%, #b27d12);
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      color: #6d4600;
-      font-weight: bold;
-      font-size: 17px;
-      box-shadow: 0 6px 14px rgba(0,0,0,0.16);
-      margin: 10px auto 0 auto;
-      line-height: 1.5;
-    }
-
     .download-panel {
       margin-top: 22px;
       padding: 18px;
@@ -275,35 +285,11 @@
       font-size: 18px;
     }
 
-    .download-buttons {
-      display: flex;
-      justify-content: center;
-      gap: 12px;
-      flex-wrap: wrap;
-      margin-top: 12px;
-    }
-
-    #downloadBtn {
-      background: #2e7d32;
-      color: white;
-    }
-
-    #emailBtn {
-      background: #6b5b95;
-      color: white;
-    }
-
     .small-note {
       margin-top: 12px;
       color: #777;
       font-size: 13px;
       line-height: 1.6;
-    }
-
-    .print-tip {
-      margin-top: 14px;
-      font-size: 14px;
-      color: #777;
     }
 
     @media (max-width: 640px) {
@@ -341,8 +327,7 @@
       .intro,
       .controls,
       #message,
-      .download-panel,
-      .print-tip {
+      .download-panel {
         display: none;
       }
 
@@ -416,6 +401,7 @@
             日期
             <div class="date-line" id="certDate">2026 年 4 月 22 日</div>
           </div>
+
           <div class="sign-box">
             認證單位
             <div class="sign-line">國立臺灣海洋大學桃園觀音校區</div>
@@ -425,15 +411,11 @@
 
       <div class="download-panel">
         <div class="download-title">下載證書</div>
-
-        <div class="download-buttons">
-          <button id="downloadBtn" type="button">直接下載證書 PNG</button>
+        <button id="downloadBtn" type="button">直接下載證書 PNG</button>
+        <div class="small-note">
+          按下按鈕後，系統會把目前顯示的證書下載成圖片檔。
         </div>
-
-        <div class="small-note">按下「直接下載證書 PNG」後，系統會把目前顯示的證書下載成圖片檔。</div>
       </div>
-
-      <div class="print-tip">如需列印，可直接使用瀏覽器列印功能。</div>
     </div>
   </div>
 
@@ -509,19 +491,6 @@
           link.href = canvas.toDataURL("image/png");
           link.click();
         });
-      }
-
-        var subject = encodeURIComponent("小小石滬匠師合格證書");
-        var body = encodeURIComponent(
-          nickname + " 您好：\n\n" +
-          "這是您的小小石滬匠師合格證書下載頁面。\n\n" +
-          "請打開以下連結，輸入暱稱後即可產生並下載證書：\n" +
-          window.location.href + "\n\n" +
-          "提醒：若需要圖片檔，請在頁面中按「直接下載證書 PNG」。"
-        );
-
-        var mailto = "mailto:" + email + "?subject=" + subject + "&body=" + body;
-        window.location.href = mailto;
       }
 
       generateBtn.addEventListener("click", generateCertificate);
