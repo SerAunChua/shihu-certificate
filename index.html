@@ -5,8 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>小小石滬匠師證書</title>
 
-  <!-- 下載證書圖片用 -->
-  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
   <style>
     body {
@@ -78,6 +77,17 @@
       transform: translateY(-1px);
     }
 
+    #downloadBtn {
+      display: none;
+      background: #b1842f;
+      color: white;
+    }
+
+    #downloadBtn:hover {
+      background: #8f6a24;
+      transform: translateY(-1px);
+    }
+
     #resetBtn {
       background: #f2f2f2;
       color: #444;
@@ -85,16 +95,6 @@
 
     #resetBtn:hover {
       background: #e7e7e7;
-    }
-
-    #downloadBtn {
-      background: #2e7d32;
-      color: white;
-    }
-
-    #downloadBtn:hover {
-      background: #246428;
-      transform: translateY(-1px);
     }
 
     #message {
@@ -233,22 +233,6 @@
       line-height: 1;
     }
 
-    .seal {
-      width: 110px;
-      height: 110px;
-      border-radius: 50%;
-      background: radial-gradient(circle at 35% 35%, #f7e7a8, #d6a530 65%, #b27d12);
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      color: #6d4600;
-      font-weight: bold;
-      font-size: 17px;
-      box-shadow: 0 6px 14px rgba(0,0,0,0.16);
-      margin: 10px auto 0 auto;
-      line-height: 1.5;
-    }
-
     .bottom-row {
       margin-top: 28px;
       display: flex;
@@ -270,26 +254,26 @@
       padding-top: 8px;
     }
 
-    .download-panel {
-      margin-top: 22px;
-      padding: 18px;
-      border-radius: 18px;
-      background: #f6fbfd;
-      border: 1px solid #d8edf4;
-    }
-
-    .download-title {
+    .seal {
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #f7e7a8, #d6a530 65%, #b27d12);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #6d4600;
       font-weight: bold;
-      color: #2f6f81;
-      margin-bottom: 12px;
-      font-size: 18px;
+      font-size: 17px;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.16);
+      margin: 10px auto 0 auto;
+      line-height: 1.5;
     }
 
-    .small-note {
-      margin-top: 12px;
+    .print-tip {
+      margin-top: 14px;
+      font-size: 14px;
       color: #777;
-      font-size: 13px;
-      line-height: 1.6;
     }
 
     @media (max-width: 640px) {
@@ -327,7 +311,7 @@
       .intro,
       .controls,
       #message,
-      .download-panel {
+      .print-tip {
         display: none;
       }
 
@@ -361,6 +345,7 @@
     <div class="controls">
       <input type="text" id="nickname" placeholder="請輸入暱稱">
       <button id="generateBtn" type="button">產生證書</button>
+      <button id="downloadBtn" type="button">下載證書</button>
       <button id="resetBtn" type="button">重新輸入</button>
     </div>
 
@@ -401,7 +386,6 @@
             日期
             <div class="date-line" id="certDate">2026 年 4 月 22 日</div>
           </div>
-
           <div class="sign-box">
             認證單位
             <div class="sign-line">國立臺灣海洋大學桃園觀音校區</div>
@@ -409,13 +393,7 @@
         </div>
       </div>
 
-      <div class="download-panel">
-        <div class="download-title">下載證書</div>
-        <button id="downloadBtn" type="button">直接下載證書 PNG</button>
-        <div class="small-note">
-          按下按鈕後，系統會把目前顯示的證書下載成圖片檔。
-        </div>
-      </div>
+      <div class="print-tip">可按「下載證書」直接下載 PNG 圖片，也可以使用瀏覽器列印功能。</div>
     </div>
   </div>
 
@@ -423,12 +401,13 @@
     (function () {
       var nicknameInput = document.getElementById("nickname");
       var generateBtn = document.getElementById("generateBtn");
+      var downloadBtn = document.getElementById("downloadBtn");
       var resetBtn = document.getElementById("resetBtn");
       var certificateArea = document.getElementById("certificateArea");
+      var certificate = document.getElementById("certificate");
       var certName = document.getElementById("certName");
       var certDate = document.getElementById("certDate");
       var message = document.getElementById("message");
-      var downloadBtn = document.getElementById("downloadBtn");
 
       function formatDate() {
         var today = new Date();
@@ -448,6 +427,7 @@
           message.textContent = "請先輸入暱稱。";
           message.style.color = "#d32f2f";
           certificateArea.style.display = "none";
+          downloadBtn.style.display = "none";
           return;
         }
 
@@ -458,12 +438,50 @@
         message.style.color = "#2e7d32";
 
         certificateArea.style.display = "block";
+        downloadBtn.style.display = "inline-block";
         certificateArea.scrollIntoView({ behavior: "smooth" });
+      }
+
+      function downloadCertificate() {
+        var nickname = nicknameInput.value.replace(/^\s+|\s+$/g, "");
+
+        if (nickname === "") {
+          message.textContent = "請先輸入暱稱。";
+          message.style.color = "#d32f2f";
+          return;
+        }
+
+        if (typeof html2canvas === "undefined") {
+          message.textContent = "下載工具尚未載入，請重新整理頁面後再試。";
+          message.style.color = "#d32f2f";
+          return;
+        }
+
+        message.textContent = "正在產生下載檔案，請稍候...";
+        message.style.color = "#555";
+
+        html2canvas(certificate, {
+          scale: 2,
+          backgroundColor: "#fffdf8",
+          useCORS: true
+        }).then(function (canvas) {
+          var link = document.createElement("a");
+          link.download = "小小石滬匠師合格證書_" + cleanFileName(nickname) + ".png";
+          link.href = canvas.toDataURL("image/png");
+          link.click();
+
+          message.textContent = "證書已開始下載。";
+          message.style.color = "#2e7d32";
+        }).catch(function () {
+          message.textContent = "下載失敗，請改用瀏覽器列印或截圖保存。";
+          message.style.color = "#d32f2f";
+        });
       }
 
       function resetAll() {
         nicknameInput.value = "";
         certificateArea.style.display = "none";
+        downloadBtn.style.display = "none";
         certName.textContent = "參與者暱稱";
         certDate.textContent = formatDate();
         message.textContent = "請先輸入暱稱。";
@@ -471,29 +489,8 @@
         nicknameInput.focus();
       }
 
-      function downloadCertificate() {
-        var nickname = nicknameInput.value.replace(/^\s+|\s+$/g, "");
-
-        if (nickname === "") {
-          message.textContent = "請先輸入暱稱再下載。";
-          message.style.color = "#d32f2f";
-          return;
-        }
-
-        var certificate = document.getElementById("certificate");
-
-        html2canvas(certificate, {
-          scale: 2,
-          backgroundColor: "#ffffff"
-        }).then(function (canvas) {
-          var link = document.createElement("a");
-          link.download = "小小石滬匠師合格證書_" + cleanFileName(nickname) + ".png";
-          link.href = canvas.toDataURL("image/png");
-          link.click();
-        });
-      }
-
       generateBtn.addEventListener("click", generateCertificate);
+      downloadBtn.addEventListener("click", downloadCertificate);
 
       nicknameInput.addEventListener("keydown", function (event) {
         if (event.key === "Enter") {
@@ -502,7 +499,6 @@
       });
 
       resetBtn.addEventListener("click", resetAll);
-      downloadBtn.addEventListener("click", downloadCertificate);
 
       certDate.textContent = formatDate();
     })();
