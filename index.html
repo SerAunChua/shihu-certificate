@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>小小石滬匠師證書</title>
 
+  <!-- 用來把證書區塊轉成圖片下載 -->
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+
   <style>
     body {
       margin: 0;
@@ -257,6 +260,46 @@
       line-height: 1.5;
     }
 
+    .download-panel {
+      margin-top: 22px;
+      padding: 18px;
+      border-radius: 18px;
+      background: #f6fbfd;
+      border: 1px solid #d8edf4;
+    }
+
+    .download-title {
+      font-weight: bold;
+      color: #2f6f81;
+      margin-bottom: 12px;
+      font-size: 18px;
+    }
+
+    .download-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    #downloadBtn {
+      background: #2e7d32;
+      color: white;
+    }
+
+    #emailBtn {
+      background: #6b5b95;
+      color: white;
+    }
+
+    .small-note {
+      margin-top: 12px;
+      color: #777;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
     .print-tip {
       margin-top: 14px;
       font-size: 14px;
@@ -298,6 +341,7 @@
       .intro,
       .controls,
       #message,
+      .download-panel,
       .print-tip {
         display: none;
       }
@@ -338,7 +382,7 @@
     <div id="message">請先輸入暱稱。</div>
 
     <div id="certificateArea">
-      <div class="certificate">
+      <div class="certificate" id="certificate">
         <div class="decor-line"></div>
 
         <div class="school">國立臺灣海洋大學</div>
@@ -379,6 +423,24 @@
         </div>
       </div>
 
+      <div class="download-panel">
+        <div class="download-title">取得證書</div>
+
+        <div class="controls">
+          <input type="email" id="emailInput" placeholder="可選填 Email">
+        </div>
+
+        <div class="download-buttons">
+          <button id="downloadBtn" type="button">直接下載證書 PNG</button>
+          <button id="emailBtn" type="button">透過郵件取得</button>
+        </div>
+
+        <div class="small-note">
+          直接下載會把目前證書存成 PNG 圖片。<br>
+          郵件功能會開啟使用者的 Email App，附上網頁連結；純 GitHub Pages 無法自動夾帶附件。
+        </div>
+      </div>
+
       <div class="print-tip">如需列印，可直接使用瀏覽器列印功能。</div>
     </div>
   </div>
@@ -392,12 +454,19 @@
       var certName = document.getElementById("certName");
       var certDate = document.getElementById("certDate");
       var message = document.getElementById("message");
+      var downloadBtn = document.getElementById("downloadBtn");
+      var emailBtn = document.getElementById("emailBtn");
+      var emailInput = document.getElementById("emailInput");
 
       function formatDate() {
         var today = new Date();
         return today.getFullYear() + " 年 " +
                (today.getMonth() + 1) + " 月 " +
                today.getDate() + " 日";
+      }
+
+      function cleanFileName(text) {
+        return text.replace(/[\\/:*?"<>|]/g, "").replace(/\s+/g, "_");
       }
 
       function generateCertificate() {
@@ -422,12 +491,58 @@
 
       function resetAll() {
         nicknameInput.value = "";
+        emailInput.value = "";
         certificateArea.style.display = "none";
         certName.textContent = "參與者暱稱";
         certDate.textContent = formatDate();
         message.textContent = "請先輸入暱稱。";
         message.style.color = "#333";
         nicknameInput.focus();
+      }
+
+      function downloadCertificate() {
+        var nickname = nicknameInput.value.replace(/^\s+|\s+$/g, "");
+
+        if (nickname === "") {
+          message.textContent = "請先輸入暱稱再下載。";
+          message.style.color = "#d32f2f";
+          return;
+        }
+
+        var certificate = document.getElementById("certificate");
+
+        html2canvas(certificate, {
+          scale: 2,
+          backgroundColor: "#ffffff"
+        }).then(function (canvas) {
+          var link = document.createElement("a");
+          link.download = "小小石滬匠師合格證書_" + cleanFileName(nickname) + ".png";
+          link.href = canvas.toDataURL("image/png");
+          link.click();
+        });
+      }
+
+      function emailCertificate() {
+        var nickname = nicknameInput.value.replace(/^\s+|\s+$/g, "");
+        var email = emailInput.value.replace(/^\s+|\s+$/g, "");
+
+        if (nickname === "") {
+          message.textContent = "請先輸入暱稱。";
+          message.style.color = "#d32f2f";
+          return;
+        }
+
+        var subject = encodeURIComponent("小小石滬匠師合格證書");
+        var body = encodeURIComponent(
+          nickname + " 您好：\n\n" +
+          "這是您的小小石滬匠師合格證書下載頁面。\n\n" +
+          "請打開以下連結，輸入暱稱後即可產生並下載證書：\n" +
+          window.location.href + "\n\n" +
+          "提醒：若需要圖片檔，請在頁面中按「直接下載證書 PNG」。"
+        );
+
+        var mailto = "mailto:" + email + "?subject=" + subject + "&body=" + body;
+        window.location.href = mailto;
       }
 
       generateBtn.addEventListener("click", generateCertificate);
@@ -439,6 +554,8 @@
       });
 
       resetBtn.addEventListener("click", resetAll);
+      downloadBtn.addEventListener("click", downloadCertificate);
+      emailBtn.addEventListener("click", emailCertificate);
 
       certDate.textContent = formatDate();
     })();
